@@ -11,7 +11,7 @@ import asset.spy.auth.service.payload.response.JwtResponse;
 import asset.spy.auth.service.repository.AccountRepository;
 import asset.spy.auth.service.repository.RefreshTokenRepository;
 import asset.spy.auth.service.security.JwtTokenProvider;
-import asset.spy.auth.service.service.token.TokenServiceImpl;
+import asset.spy.auth.service.service.token.TokenService;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,9 +31,10 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     private final AccountRepository accountRepository;
-    private final TokenServiceImpl tokenService;
+    private final TokenService tokenService;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    @Override
     @Transactional
     public JwtResponse authenticate(LoginRequest loginRequest, String deviceType) {
         Authentication authentication = authenticationManager.authenticate(
@@ -61,6 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    @Override
     @Transactional
     public JwtResponse refreshToken(TokenRefreshRequest request, String deviceType) {
         String requestRefreshToken = request.getRefreshToken();

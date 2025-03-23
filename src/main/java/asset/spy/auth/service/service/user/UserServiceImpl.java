@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
     private final AccountRepository accountRepository;
 
     @Override
+    @Transactional
     public void register(RegisterRequest registerRequest) {
         if (accountRepository.existsByLogin(registerRequest.getLogin())) {
             throw new RegistrationException("Login " + registerRequest.getLogin() + " already exists");
@@ -48,6 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserInfoResponse getUserInfo(Authentication authentication) {
         String login = authentication.getName();
         Account account = accountRepository.findByLogin(login)

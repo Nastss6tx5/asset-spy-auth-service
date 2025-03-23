@@ -5,7 +5,7 @@ databaseChangeLog:
       comment: Create account table
       changes:
         - createTable:
-            tableName: accounts
+            tableName: account
             schemaName: asset_spy_auth_service_db
             columns:
               - column:
@@ -39,10 +39,11 @@ databaseChangeLog:
                     unique: true
                     nullable: false
         - addForeignKeyConstraint:
-            baseTableName: accounts
+            baseTableName: account
             baseColumnNames: user_id
             constraintName: fk_account_user
             referencedTableSchemaName: asset_spy_user_service_db
             referencedTableName: users
             referencedColumnNames: id
             onDelete: CASCADE
+            onUpdate: RESTRICT

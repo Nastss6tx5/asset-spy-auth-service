@@ -15,7 +15,7 @@ import java.time.OffsetDateTime;
 
 @Entity
 @Data
-@Table(name = "refresh_tokens", schema = "asset_spy_auth_service_db")
+@Table(name = "refresh_token", schema = "asset_spy_auth_service_db")
 public class RefreshToken {
 
     @Id

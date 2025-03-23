@@ -6,6 +6,5 @@ import org.springframework.security.core.Authentication;
 
 public interface UserService {
     void register(RegisterRequest registerRequest);
-
     UserInfoResponse getUserInfo(Authentication authentication);
 }

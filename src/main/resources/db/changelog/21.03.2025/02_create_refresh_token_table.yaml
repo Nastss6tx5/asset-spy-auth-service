@@ -5,7 +5,7 @@ databaseChangeLog:
       comment: Create refresh tokens table
       changes:
         - createTable:
-            tableName: refresh_tokens
+            tableName: refresh_token
             schemaName: asset_spy_auth_service_db
             columns:
               - column:
@@ -35,8 +35,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
-            baseTableName: refresh_tokens
+            baseTableName: refresh_token
             baseColumnNames: account_id
-            constraintName: fr_refresh_tokens_account
-            referencedTableName: accounts
+            constraintName: fr_refresh_token_account
+            referencedTableName: account
             referencedColumnNames: id
