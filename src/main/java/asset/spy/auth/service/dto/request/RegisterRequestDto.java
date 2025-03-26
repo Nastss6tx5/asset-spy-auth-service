@@ -3,13 +3,11 @@ package asset.spy.auth.service.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-@Builder
 public class RegisterRequestDto {
 
     @NotBlank

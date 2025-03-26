@@ -28,10 +28,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("auth/register", "auth/login", "/auth/refresh").permitAll()
-                        .requestMatchers("/auth/user/info").authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/v1/auth/register", "/v1/auth/login", "/v1/auth/refresh").permitAll()
+                        .requestMatchers("/v1/auth/user/*").hasRole("USER")
+                        .requestMatchers("/v1/auth/user/info").authenticated()
                         .anyRequest().denyAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(
