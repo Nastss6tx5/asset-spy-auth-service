@@ -1,4 +1,4 @@
-package asset.spy.auth.service.payload.request;
+package asset.spy.auth.service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenRefreshRequest {
+public class JwtResponseDto {
+    private String accessToken;
     private String refreshToken;
 }

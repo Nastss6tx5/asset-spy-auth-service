@@ -1,10 +1,9 @@
 package asset.spy.auth.service.service.user;
 
-import asset.spy.auth.service.payload.request.RegisterRequest;
-import asset.spy.auth.service.payload.response.UserInfoResponse;
-import org.springframework.security.core.Authentication;
+import asset.spy.auth.service.dto.request.RegisterRequestDto;
+import asset.spy.auth.service.dto.response.UserInfoResponseDto;
 
 public interface UserService {
-    void register(RegisterRequest registerRequest);
-    UserInfoResponse getUserInfo(Authentication authentication);
+    void register(RegisterRequestDto registerRequestDto);
+    UserInfoResponseDto getUserInfo(String login);
 }

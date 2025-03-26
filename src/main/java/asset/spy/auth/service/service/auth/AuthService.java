@@ -1,10 +1,10 @@
 package asset.spy.auth.service.service.auth;
 
-import asset.spy.auth.service.payload.request.LoginRequest;
-import asset.spy.auth.service.payload.request.TokenRefreshRequest;
-import asset.spy.auth.service.payload.response.JwtResponse;
+import asset.spy.auth.service.dto.request.LoginRequestDto;
+import asset.spy.auth.service.dto.request.TokenRefreshRequestDto;
+import asset.spy.auth.service.dto.response.JwtResponseDto;
 
 public interface AuthService {
-    JwtResponse authenticate(LoginRequest loginRequest, String deviceType);
-    JwtResponse refreshToken(TokenRefreshRequest refreshRequest, String deviceType);
+    JwtResponseDto authenticate(LoginRequestDto loginRequestDto, String deviceType);
+    JwtResponseDto refreshToken(TokenRefreshRequestDto refreshRequest, String deviceType);
 }

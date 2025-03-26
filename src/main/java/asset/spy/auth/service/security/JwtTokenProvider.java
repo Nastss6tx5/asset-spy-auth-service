@@ -1,6 +1,5 @@
 package asset.spy.auth.service.security;
 
-import asset.spy.auth.service.details.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -11,10 +10,11 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 @Slf4j
@@ -34,22 +34,19 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(Authentication authentication) {
-        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
-
+    public String generateToken(String login, String role) {
         return Jwts.builder()
-                .subject(userPrincipal.getLogin())
+                .subject(login)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessExpiration))
+                .claim("role", role)
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String generateRefreshToken(Authentication authentication, String deviceType) {
-        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
-
+    public String generateRefreshToken(String login, String deviceType) {
         return Jwts.builder()
-                .subject(userPrincipal.getLogin())
+                .subject(login)
                 .claim("deviceType", deviceType)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
@@ -58,12 +55,11 @@ public class JwtTokenProvider {
     }
 
     public String extractLogin(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        return extractClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractClaims(token).get("role", String.class);
     }
 
     public Claims extractClaims(String token) {
@@ -72,6 +68,12 @@ public class JwtTokenProvider {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public OffsetDateTime extractExpiration(String token) {
+        Claims claims = extractClaims(token);
+        Date expiration = claims.getExpiration();
+        return expiration.toInstant().atOffset(ZoneOffset.UTC);
     }
 
     public boolean validateToken(String token) {
@@ -96,5 +98,4 @@ public class JwtTokenProvider {
         }
         return false;
     }
-
 }

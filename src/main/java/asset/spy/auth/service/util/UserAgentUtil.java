@@ -6,14 +6,14 @@ public class UserAgentUtil {
         if (userAgent == null || userAgent.isEmpty()) {
             return "unknown device";
         }
-
-        if (userAgent.contains("Mobile")) {
-            if (userAgent.contains("Android")) {
-                return "mobile-android";
-            }
-            if (userAgent.contains("iphone") || userAgent.contains("ipad")) {
-                return "mobile-ios";
-            }
+        String lowerAgent = userAgent.toLowerCase();
+        if (lowerAgent.contains("android")) {
+            return "mobile-android";
+        }
+        if (lowerAgent.contains("iphone") || lowerAgent.contains("ipad")) {
+            return "mobile-ios";
+        }
+        if (lowerAgent.contains("mobile")) {
             return "mobile-other";
         }
         return "web-browser";
