@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 21.03.2025_01
+      author: Nastasiia227@gmail.com
+      comment: Create account table
+      changes:
+        - createTable:
+            tableName: account
+            schemaName: asset_spy_user_service_db
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: VARCHAR (255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR (255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR (20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: external_id
+                  type: UUID
+                  constraints:
+                    unique: true
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: account
+            baseColumnNames: user_id
+            constraintName: fk_account_user
+            referencedTableSchemaName: asset_spy_user_service_db
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: RESTRICT
