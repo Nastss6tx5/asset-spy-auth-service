@@ -21,7 +21,7 @@ import java.time.OffsetDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "refresh_token", schema = "asset_spy_auth_service_db")
+@Table(name = "refresh_token")
 public class RefreshToken {
 
     @Id

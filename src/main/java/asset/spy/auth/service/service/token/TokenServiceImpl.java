@@ -36,11 +36,4 @@ public class TokenServiceImpl implements TokenService {
         token.setExpireTime(expireTime);
         refreshTokenRepository.save(token);
     }
-
-    @Override
-    @Transactional
-    public void cleanupExpiredTokens() {
-        OffsetDateTime currentTime = OffsetDateTime.now();
-        refreshTokenRepository.deleteByExpireTimeBefore(currentTime);
-    }
 }

@@ -6,7 +6,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: refresh_token
-            schemaName: asset_spy_auth_service_db
+            schemaName: asset_spy_user_service_db
             columns:
               - column:
                   name: id

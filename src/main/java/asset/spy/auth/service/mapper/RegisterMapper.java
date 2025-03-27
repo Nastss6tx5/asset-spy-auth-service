@@ -21,5 +21,4 @@ public interface RegisterMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "role", expression = "java(Role.getDefaultRole())")
     Account toAccount(RegisterRequestDto registerRequestDto);
-
 }

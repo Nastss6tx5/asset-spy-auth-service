@@ -24,10 +24,10 @@ public class JwtTokenProvider {
     @Value("${security.jwt.secret}")
     private String secret;
 
-    @Value("${security.jwt.accessExpiration}")
+    @Value("${security.jwt.access-expiration}")
     private long accessExpiration;
 
-    @Value("${security.jwt.refreshExpiration}")
+    @Value("${security.jwt.refresh-expiration}")
     private long refreshExpiration;
 
     private SecretKey getSigningKey() {

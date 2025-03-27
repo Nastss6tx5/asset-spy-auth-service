@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    void deleteByExpireTimeBefore(OffsetDateTime expireTimeBefore);
+    void deleteByExpireTimeBefore(OffsetDateTime expireTime);
     Optional<RefreshToken> findByRefreshToken(String refreshToken);
     Optional<RefreshToken> findByAccountIdAndDeviceType(long accountId, String deviceType);
 }
