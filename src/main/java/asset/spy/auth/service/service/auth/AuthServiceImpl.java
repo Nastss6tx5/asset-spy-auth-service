@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -33,8 +35,10 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(loginRequestDto.getLogin(), loginRequestDto.getPassword())
         );
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String jwt = jwtTokenProvider.generateToken(userDetails.getLogin(), userDetails.getRole().toString());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails.getLogin(), deviceType);
+        String jwt = jwtTokenProvider.generateToken(userDetails.getLogin(), userDetails.getRole().toString(),
+                userDetails.getExternalId());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails.getLogin(), deviceType,
+                userDetails.getExternalId());
         tokenService.saveRefreshToken(refreshToken, userDetails.getId(), deviceType);
         return new JwtResponseDto(jwt, refreshToken);
     }
@@ -50,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
 
         String login = jwtTokenProvider.extractLogin(requestRefreshToken);
         String role = jwtTokenProvider.extractRole(requestRefreshToken);
+        UUID externalId = jwtTokenProvider.extractExternalId(requestRefreshToken);
 
         RefreshToken existingToken = refreshTokenRepository.findByRefreshToken(requestRefreshToken)
                 .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token"));
@@ -58,8 +63,8 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidRefreshTokenException("Device type mismatch");
         }
 
-        String newJwt = jwtTokenProvider.generateToken(login, role);
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken(login, deviceType);
+        String newJwt = jwtTokenProvider.generateToken(login, role, externalId);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(login, deviceType, externalId);
 
         tokenService.saveRefreshToken(newRefreshToken, account.getId(), deviceType);
         return new JwtResponseDto(newJwt, newRefreshToken);

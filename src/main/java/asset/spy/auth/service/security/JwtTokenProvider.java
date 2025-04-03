@@ -16,6 +16,7 @@ import javax.crypto.SecretKey;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -34,20 +35,22 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String login, String role) {
+    public String generateToken(String login, String role, UUID externalId) {
         return Jwts.builder()
                 .subject(login)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessExpiration))
                 .claim("role", role)
+                .claim("externalId", externalId.toString())
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String generateRefreshToken(String login, String deviceType) {
+    public String generateRefreshToken(String login, String deviceType, UUID externalId) {
         return Jwts.builder()
                 .subject(login)
                 .claim("deviceType", deviceType)
+                .claim("externalId", externalId.toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(getSigningKey())
@@ -60,6 +63,12 @@ public class JwtTokenProvider {
 
     public String extractRole(String token) {
         return extractClaims(token).get("role", String.class);
+    }
+
+    public UUID extractExternalId(String token) {
+        Claims claims = extractClaims(token);
+        String externalId = claims.get("externalId", String.class);
+        return UUID.fromString(externalId);
     }
 
     public Claims extractClaims(String token) {
