@@ -67,8 +67,7 @@ public class JwtTokenProvider {
 
     public UUID extractExternalId(String token) {
         Claims claims = extractClaims(token);
-        String externalId = claims.get("externalId", String.class);
-        return UUID.fromString(externalId);
+        return UUID.fromString(claims.get("externalId", String.class));
     }
 
     public Claims extractClaims(String token) {
@@ -85,13 +84,12 @@ public class JwtTokenProvider {
         return expiration.toInstant().atOffset(ZoneOffset.UTC);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token);
-            return true;
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
@@ -105,6 +103,5 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
-        return false;
     }
 }

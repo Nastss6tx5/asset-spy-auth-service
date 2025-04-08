@@ -10,7 +10,6 @@ import asset.spy.auth.service.dto.response.JwtResponseDto;
 import asset.spy.auth.service.repository.RefreshTokenRepository;
 import asset.spy.auth.service.security.JwtTokenProvider;
 import asset.spy.auth.service.service.token.TokenService;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,9 +47,7 @@ public class AuthServiceImpl implements AuthService {
     public JwtResponseDto refreshToken(TokenRefreshRequestDto request, String deviceType) {
         String requestRefreshToken = request.getRefreshToken();
 
-        if (!jwtTokenProvider.validateToken(requestRefreshToken)) {
-            throw new ValidationException("Refresh token is not valid");
-        }
+        jwtTokenProvider.validateToken(requestRefreshToken);
 
         String login = jwtTokenProvider.extractLogin(requestRefreshToken);
         String role = jwtTokenProvider.extractRole(requestRefreshToken);
