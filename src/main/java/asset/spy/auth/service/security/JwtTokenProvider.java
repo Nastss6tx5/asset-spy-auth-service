@@ -70,14 +70,6 @@ public class JwtTokenProvider {
         return UUID.fromString(claims.get("externalId", String.class));
     }
 
-    public Claims extractClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
     public OffsetDateTime extractExpiration(String token) {
         Claims claims = extractClaims(token);
         Date expiration = claims.getExpiration();
@@ -103,5 +95,13 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
+    }
+
+    private Claims extractClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
