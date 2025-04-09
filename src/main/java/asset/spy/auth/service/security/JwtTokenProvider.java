@@ -16,6 +16,7 @@ import javax.crypto.SecretKey;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -34,20 +35,22 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String login, String role) {
+    public String generateToken(String login, String role, UUID externalId) {
         return Jwts.builder()
                 .subject(login)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessExpiration))
                 .claim("role", role)
+                .claim("externalId", externalId.toString())
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String generateRefreshToken(String login, String deviceType) {
+    public String generateRefreshToken(String login, String deviceType, UUID externalId) {
         return Jwts.builder()
                 .subject(login)
                 .claim("deviceType", deviceType)
+                .claim("externalId", externalId.toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(getSigningKey())
@@ -62,12 +65,9 @@ public class JwtTokenProvider {
         return extractClaims(token).get("role", String.class);
     }
 
-    public Claims extractClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    public UUID extractExternalId(String token) {
+        Claims claims = extractClaims(token);
+        return UUID.fromString(claims.get("externalId", String.class));
     }
 
     public OffsetDateTime extractExpiration(String token) {
@@ -76,13 +76,12 @@ public class JwtTokenProvider {
         return expiration.toInstant().atOffset(ZoneOffset.UTC);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token);
-            return true;
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
@@ -96,6 +95,13 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
-        return false;
+    }
+
+    private Claims extractClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

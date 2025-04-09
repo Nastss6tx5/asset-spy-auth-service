@@ -32,7 +32,7 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(Account account) {
         this.id = account.getId();
-        this.externalId = account.getExternalId();
+        this.externalId = account.getUser().getExternalId();
         this.login = account.getLogin();
         this.username = account.getUser().getUsername();
         this.password = account.getPassword();
