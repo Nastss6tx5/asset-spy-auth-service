@@ -8,6 +8,7 @@ import asset.spy.auth.service.dto.response.UserInfoResponseDto;
 import asset.spy.auth.service.service.auth.AuthService;
 import asset.spy.auth.service.service.user.UserService;
 import asset.spy.auth.service.util.UserAgentUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,13 +27,13 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDto registerRequestDto) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
         userService.register(registerRequestDto);
         return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponseDto> login(@RequestBody LoginRequestDto loginRequestDto,
+    public ResponseEntity<JwtResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto,
                                                 @RequestHeader("User-Agent") String userAgent) {
         return ResponseEntity.ok(authService.authenticate(loginRequestDto, UserAgentUtil.determineUserAgent(userAgent)));
     }
