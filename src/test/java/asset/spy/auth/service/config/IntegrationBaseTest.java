@@ -1,40 +1,37 @@
 package asset.spy.auth.service.config;
 
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import asset.spy.auth.service.constant.TestConstants;
+import asset.spy.auth.service.dto.request.LoginRequestDto;
+import asset.spy.auth.service.dto.request.RegisterRequestDto;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class IntegrationBaseTest {
+    protected static RegisterRequestDto registerRequest;
+    protected static LoginRequestDto loginRequest;
 
     @Container
-    public static final PostgreSQLContainer<?> POSTGRES =
+    @ServiceConnection
+    private static final PostgreSQLContainer<?> POSTGRES =
             new PostgreSQLContainer<>("postgres:15")
                     .withDatabaseName("asset_spy_test_db")
                     .withUsername("postgres")
                     .withPassword("postgres")
                     .withInitScript("create_user_table_for_test.sql");
 
+    @BeforeEach
+    void initializeDto() {
+        registerRequest = new RegisterRequestDto();
+        registerRequest.setLogin(TestConstants.TEST_LOGIN);
+        registerRequest.setUsername(TestConstants.TEST_USERNAME);
+        registerRequest.setPassword(TestConstants.TEST_PASSWORD);
+        registerRequest.setDescription(TestConstants.TEST_DESCRIPTION);
+        registerRequest.setDateOfBirth(TestConstants.TEST_DATE_OF_BIRTH);
 
-    static {
-        POSTGRES.start();
-    }
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.username", POSTGRES::getUsername);
-        registry.add("spring.datasource.password", POSTGRES::getPassword);
+        loginRequest = new LoginRequestDto();
+        loginRequest.setLogin(TestConstants.TEST_LOGIN);
+        loginRequest.setPassword(TestConstants.TEST_PASSWORD);
     }
 }

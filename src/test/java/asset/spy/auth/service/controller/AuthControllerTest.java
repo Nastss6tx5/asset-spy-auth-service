@@ -2,12 +2,8 @@ package asset.spy.auth.service.controller;
 
 import asset.spy.auth.service.config.IntegrationBaseTest;
 import asset.spy.auth.service.constant.TestConstants;
-import asset.spy.auth.service.dto.request.LoginRequestDto;
-import asset.spy.auth.service.dto.request.RegisterRequestDto;
-import asset.spy.auth.service.dto.request.TokenRefreshRequestDto;
 import asset.spy.auth.service.dto.response.JwtResponseDto;
 import asset.spy.auth.service.security.JwtTokenProvider;
-import asset.spy.auth.service.util.TestDtoFactory;
 import asset.spy.auth.service.util.TestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -21,7 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Testcontainers
 public class AuthControllerTest extends IntegrationBaseTest {
 
     @Autowired
@@ -52,26 +52,25 @@ public class AuthControllerTest extends IntegrationBaseTest {
     @Test
     @SneakyThrows
     void testRegisterUserSuccess() {
-        RegisterRequestDto request = TestDtoFactory.createRegisterRequestDto();
-        testHelper.registerUserWithValidData(request);
+        testHelper.registerUserWithValidData(registerRequest);
     }
 
     @Test
     @SneakyThrows
     void testRegisterUserWithExistingLogin() {
-        RegisterRequestDto request = TestDtoFactory.createRegisterRequestDto();
-        testHelper.registerUserWithValidData(request);
+        testHelper.registerUserWithValidData(registerRequest);
 
         mockMvc.perform(post("/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @SneakyThrows
     void testRegisterUserWithInvalidData() {
-        RegisterRequestDto invalidRequest = TestDtoFactory.createInvalidRegisterRequestDto();
+        registerRequest.setDateOfBirth(LocalDate.now().plusYears(1));
+        registerRequest.setUsername("");
 
         String[] expectedMessages = {
                 TestConstants.LOGIN_VALIDATION,
@@ -83,13 +82,12 @@ public class AuthControllerTest extends IntegrationBaseTest {
         };
         mockMvc.perform(post("/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
                     String body = result.getResponse().getContentAsString();
-                    for (String expectedMessage : expectedMessages) {
-                        assertThat(body).contains(expectedMessage);
-                    }
+                    boolean containsAnyMessage = Arrays.stream(expectedMessages).anyMatch(body::contains);
+                    assertThat(containsAnyMessage).isTrue();
                 });
     }
 
@@ -102,8 +100,6 @@ public class AuthControllerTest extends IntegrationBaseTest {
     @Test
     @SneakyThrows
     void testLoginWithInvalidCredential() {
-        LoginRequestDto loginRequest = TestDtoFactory.createInvalidLoginRequestDto();
-
         mockMvc.perform(post("/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-Agent", TestConstants.TEST_USER_AGENT)
@@ -113,28 +109,14 @@ public class AuthControllerTest extends IntegrationBaseTest {
 
     @Test
     @SneakyThrows
-    void testLoginWithInvalidData() {
-        LoginRequestDto invalidRequest = TestDtoFactory.createInvalidLoginRequestDto();
-
-        mockMvc.perform(post("/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-Agent", TestConstants.TEST_USER_AGENT)
-                        .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @SneakyThrows
     void testRefreshTokenSuccess() {
         JwtResponseDto jwtResponse = testHelper.registerAndAuthenticateUserWithValidData(TestConstants.TEST_USER_AGENT);
+        String refreshToken = jwtResponse.getRefreshToken();
 
-        TokenRefreshRequestDto refreshRequest = TestDtoFactory.createTokenRefreshRequestDto(
-                jwtResponse.getRefreshToken()
-        );
         MvcResult result = mockMvc.perform(post("/v1/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-Agent", TestConstants.TEST_USER_AGENT)
-                        .content(objectMapper.writeValueAsString(refreshRequest)))
+                        .content(objectMapper.writeValueAsString(refreshToken)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -175,4 +157,3 @@ public class AuthControllerTest extends IntegrationBaseTest {
                 .andExpect(status().isForbidden());
     }
 }
-

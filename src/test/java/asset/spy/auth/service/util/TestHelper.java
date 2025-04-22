@@ -1,5 +1,6 @@
 package asset.spy.auth.service.util;
 
+import asset.spy.auth.service.config.IntegrationBaseTest;
 import asset.spy.auth.service.dto.request.LoginRequestDto;
 import asset.spy.auth.service.dto.request.RegisterRequestDto;
 import asset.spy.auth.service.dto.response.JwtResponseDto;
@@ -11,7 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class TestHelper {
+public class TestHelper extends IntegrationBaseTest {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
@@ -39,10 +40,7 @@ public class TestHelper {
     }
 
     public JwtResponseDto registerAndAuthenticateUserWithValidData(String userAgent) throws Exception {
-        RegisterRequestDto registerRequestDto = TestDtoFactory.createRegisterRequestDto();
-        registerUserWithValidData(registerRequestDto);
-
-        LoginRequestDto loginRequestDto = TestDtoFactory.createLoginRequestDto();
-        return authenticateUserWithValidData(loginRequestDto, userAgent);
+        registerUserWithValidData(registerRequest);
+        return authenticateUserWithValidData(loginRequest, userAgent);
     }
 }
