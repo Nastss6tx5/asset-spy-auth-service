@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: asset-spy
+spec:
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    spec:
+      containers:
+        - name: auth-service
+          image: nastss6tx5/asset-spy-auth-service:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: auth-service-config
+            - secretRef:
+                name: auth-service-secret
