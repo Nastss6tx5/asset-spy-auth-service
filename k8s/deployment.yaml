@@ -8,6 +8,9 @@ spec:
     matchLabels:
       app: auth-service
   template:
+    metadata:
+      labels:
+        app: auth-service
     spec:
       containers:
         - name: auth-service
