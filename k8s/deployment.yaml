@@ -22,3 +22,13 @@ spec:
                 name: auth-service-config
             - secretRef:
                 name: auth-service-secret
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx192m -Xmx192m"
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 192Mi
+              cpy: 200m
