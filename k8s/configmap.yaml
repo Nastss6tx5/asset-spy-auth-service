@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+data:
+  SERVER_PORT: "8080"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/asset_spy_db"
+  SPRING_DATASOURCE_USERNAME: "postgres"
+  SPRING_DATA_SOURCE_DEFAULT_SCHEMA: "asset_spy_user_service_db"

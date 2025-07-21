@@ -1,0 +1,20 @@
+services:
+  auth-service:
+    build:
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/asset_spy_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: asset_spy_user_service_db
+      JWT_SECRET_KEY: "38ddfeac16e316426825dd93e41cb1cb2b248002d4843251ec7bbefebf6bed9194a8fb5ef3a6bcb1189ad1c7b828ee27cb219"
+    networks:
+      - asset-spy-network
+
+networks:
+  asset-spy-network:
+    driver: bridge
