@@ -20,7 +20,7 @@ spec:
       annotations:
         instrumentation.opentelemetry.io/inject-java: "true"
         instrumentation.opentelemetry.io/container-names: "auth-service"
-        instrumentation.opentelemetry.io/instrumentation: "observability/java-instr"
+        instrumentation.opentelemetry.io/instrumentation: "java-instr"
     spec:
       containers:
         - name: auth-service
