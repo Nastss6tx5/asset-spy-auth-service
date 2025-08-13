@@ -17,6 +17,10 @@ spec:
     metadata:
       labels:
         app: auth-service
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
+        instrumentation.opentelemetry.io/container-names: "auth-service"
+        instrumentation.opentelemetry.io/instrumentation: "observability/java-instr"
     spec:
       containers:
         - name: auth-service
@@ -28,9 +32,6 @@ spec:
                 name: auth-service-config
             - secretRef:
                 name: auth-service-secret
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-Xmx256m -Xms256m"
           resources:
             requests:
               memory: 256Mi
